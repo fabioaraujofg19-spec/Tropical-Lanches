@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tropical Lanches - Cardápio Digital & KDS</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- QR Code Generator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col pb-24">
+
+    <!-- Header / Capa Oficial -->
+    <header class="bg-red-700 text-white shadow-lg sticky top-0 z-40" id="mainHeader">
+        <!-- Banner de Capa -->
+        <div class="w-full bg-red-900 overflow-hidden relative border-b-2 border-yellow-400">
+            <img id="headerBannerImg" src="184234.png" alt="Tropical Lanches Capa" class="w-full h-36 sm:h-48 object-cover object-center" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=80';">
+            <div class="absolute bottom-2 right-3 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-lg text-xs text-yellow-400 font-semibold flex items-center gap-1.5 shadow">
+                <i class="fa-solid fa-phone"></i> <span id="headerPhone">(62) 98491-3598</span>
+            </div>
+            
+            <!-- Indicador de Mesa Identificada via URL -->
+            <div id="tableBadge" class="hidden absolute top-2 left-2 bg-yellow-400 text-red-950 font-extrabold px-3 py-1.5 rounded-xl text-xs shadow-xl flex items-center gap-2 border-2 border-red-800">
+                <span>MESA <span id="tableNumber">00</span></span>
+            </div>
+        </div>
+
+        <div class="max-w-4xl mx-auto px-4 py-2 flex items-center justify-between bg-red-950 flex-wrap gap-2">
+            <div class="flex items-center space-x-2 text-xs flex-wrap gap-y-1">
+                <span class="bg-yellow-400 text-red-950 font-bold px-2 py-1 rounded">Aberto</span>
+                
+                <!-- Avaliação Google -->
+                <a id="googleReviewBtn" href="#" target="_blank" class="bg-yellow-500 hover:bg-yellow-400 text-red-950 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition shadow">
+                    <i class="fa-brands fa-google"></i> Avalie-nos
+                </a>
+
+                <!-- BOTÃO CHAMAR GARÇOM -->
+                <button onclick="callWaiterPrompt()" class="bg-red-600 hover:bg-red-500 text-white font-extrabold px-3 py-1 rounded-lg transition shadow flex items-center gap-1 animate-pulse border border-yellow-400">
+                    🔔 Chamar Garçom
+                </button>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <button onclick="openTrackModal()" class="bg-yellow-500 hover:bg-yellow-400 text-red-950 font-bold px-2.5 py-1.5 rounded-lg text-xs flex items-center gap-1 shadow transition">
+                    <i class="fa-solid fa-truck-fast text-xs"></i>
+                    <span>Acompanhar</span>
+                </button>
+                <button onclick="openAdminPortal()" class="bg-white/10 hover:bg-white/20 px-2.5 py-1.5 rounded-lg text-yellow-400 text-xs font-bold transition flex items-center gap-1">
+                    <i class="fa-solid fa-user-gear"></i> Painel Admin
+                </button>
+            </div>
+        </div>
+
+        <!-- Categorias -->
+        <div class="bg-red-900/90 backdrop-blur-md border-t border-red-800/40" id="categoriesNav">
+            <div class="max-w-4xl mx-auto flex items-center space-x-2 overflow-x-auto px-4 py-2.5 hide-scrollbar text-xs font-semibold" id="categoriesBar">
+                <button onclick="filterCategory('todos', this)" class="cat-btn active bg-yellow-400 text-red-950 px-4 py-1.5 rounded-full whitespace-nowrap transition shadow">Todos</button>
+                <button onclick="filterCategory('pizzas', this)" class="cat-btn bg-white/10 text-white hover:bg-white/20 px-4 py-1.5 rounded-full whitespace-nowrap transition">🍕 Pizzas</button>
+                <button onclick="filterCategory('sanduiches', this)" class="cat-btn bg-white/10 text-white hover:bg-white/20 px-4 py-1.5 rounded-full whitespace-nowrap transition">🍔 Sanduíches</button>
+                <button onclick="filterCategory('porcoes', this)" class="cat-btn bg-white/10 text-white hover:bg-white/20 px-4 py-1.5 rounded-full whitespace-nowrap transition">🍟 Porções</button>
+                <button onclick="filterCategory('pratos', this)" class="cat-btn bg-white/10 text-white hover:bg-white/20 px-4 py-1.5 rounded-full whitespace-nowrap transition">🍽️ Executivos</button>
+                <button onclick="filterCategory('sucos', this)" class="cat-btn bg-white/10 text-white hover:bg-white/20 px-4 py-1.5 rounded-full whitespace-nowrap transition">🥤 Sucos & Cremes</button>
+                <button onclick="filterCategory('bebidas', this)" class="cat-btn bg-white/10 text-white hover:bg-white/20 px-4 py-1.5 rounded-full whitespace-nowrap transition">🥤 Bebidas</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Barra de Pesquisa -->
+    <div class="max-w-4xl mx-auto w-full px-4 pt-4" id="searchBarContainer">
+        <div class="relative">
+            <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Buscar pizza, lanche, bebida..." class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-red-700">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-400 text-sm"></i>
+        </div>
+    </div>
+
+    <!-- Container dos Produtos (Visão Cliente) -->
+    <main class="max-w-4xl mx-auto w-full px-4 py-4 flex-grow" id="clientView">
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </main>
+
+    <!-- Painel Administrativo / Cozinha (KDS com Pull Requests e Balanço) -->
+    <main class="max-w-4xl mx-auto w-full px-4 py-6 hidden flex-grow space-y-6" id="adminView">
+        <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border">
+            <div>
+                <h2 class="font-extrabold text-lg text-red-800" id="adminStoreTitle">Painel do Administrador & Cozinha</h2>
+                <p class="text-xs text-gray-500">Gerenciamento de Pedidos, Caixa Diário e Cardápio.</p>
+            </div>
+            <button onclick="closeAdminPortal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-xl text-xs font-bold transition">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Cardápio
+            </button>
+        </div>
+
+        <!-- Abas Admin -->
+        <div class="flex gap-2 border-b border-gray-200 pb-2 overflow-x-auto">
+            <button onclick="switchAdminTab('kitchen')" id="tabBtnKitchen" class="bg-red-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap">🔀 Pull Requests / Cozinha <span id="kitchenPrBadge" class="bg-yellow-400 text-red-950 px-1.5 py-0.2 rounded-full text-[10px] ml-1 hidden">0</span></button>
+            <button onclick="switchAdminTab('waiter')" id="tabBtnWaiter" class="bg-gray-200 text-gray-700 hover:bg-gray-300 px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5">
+                🔔 Chamados Garçom 
+                <span id="waiterBadgeCount" class="bg-red-600 text-white px-1.5 py-0.2 rounded-full text-[10px] hidden">0</span>
+            </button>
+            <button onclick="switchAdminTab('cashier')" id="tabBtnCashier" class="bg-gray-200 text-gray-700 hover:bg-gray-300 px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap">📊 Balanço & Faturamento</button>
+            <button onclick="switchAdminTab('menu')" id="tabBtnMenu" class="bg-gray-200 text-gray-700 hover:bg-gray-300 px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap">🍔 Editar Cardápio</button>
+            <button onclick="switchAdminTab('config')" id="tabBtnConfig" class="bg-gray-200 text-gray-700 hover:bg-gray-300 px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap">⚙️ Dados da Loja & Logo</button>
+        </div>
+
+        <!-- Conteúdo Aba: Cozinha & Pull Requests -->
+        <div id="adminTabKitchen" class="space-y-4">
+            <div class="flex justify-between items-center bg-red-50 p-3 rounded-xl border border-red-200">
+                <div>
+                    <h3 class="font-bold text-sm text-red-900">Fluxo de Comandas (Pull Requests)</h3>
+                    <p class="text-[11px] text-red-700">Acompanhe e altere os status para sincronizar com os clientes em tempo real.</p>
+                </div>
+                <span class="text-xs bg-red-200 text-red-900 font-extrabold px-3 py-1 rounded-lg">KDS Ativo</span>
+            </div>
+            <div id="kitchenOrdersList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p class="text-xs text-gray-500 col-span-full text-center py-6">Nenhum Pull Request aberto no momento.</p>
+            </div>
+        </div>
+
+        <!-- Conteúdo Aba: Chamados de Garçom -->
+        <div id="adminTabWaiter" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-sm text-gray-700">Mesas Solicitando Atendimento</h3>
+                <button onclick="clearAllWaiterCalls()" class="text-xs bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-lg font-bold">Limpar Todos</button>
+            </div>
+            <div id="waiterCallsList" class="space-y-3">
+                <p class="text-xs text-gray-500 text-center py-6">Nenhum chamado de garçom no momento.</p>
+            </div>
+        </div>
+
+        <!-- Conteúdo Aba: Balanço de Caixa e Faturamento Diário -->
+        <div id="adminTabCashier" class="hidden space-y-5">
+            <div class="bg-gradient-to-r from-red-800 to-red-900 text-white p-5 rounded-2xl shadow-lg space-y-3">
+                <div class="flex justify-between items-center border-b border-red-700 pb-3">
+                    <div>
+                        <span class="text-xs text-yellow-300 font-bold uppercase tracking-wider block">Balanço do Dia</span>
+                        <h3 class="text-2xl font-extrabold" id="cashTotalRevenue">R$ 0,00</h3>
+                    </div>
+                    <button onclick="resetDailyCashier()" class="bg-red-950 hover:bg-black/40 text-yellow-400 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition border border-red-700">
+                        <i class="fa-solid fa-arrows-rotate"></i> Fechar / Zerar Caixa
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs pt-1">
+                    <div class="bg-white/10 p-2.5 rounded-xl border border-white/10">
+                        <span class="text-gray-300 block text-[10px]">Total de Pedidos</span>
+                        <span class="font-extrabold text-base text-white" id="cashTotalOrders">0</span>
+                    </div>
+                    <div class="bg-white/10 p-2.5 rounded-xl border border-white/10">
+                        <span class="text-gray-300 block text-[10px]">Ticket Médio</span>
+                        <span class="font-extrabold text-base text-white" id="cashAverageTicket">R$ 0,00</span>
+                    </div>
+                    <div class="bg-white/10 p-2.5 rounded-xl border border-white/10 col-span-2 sm:col-span-1">
+                        <span class="text-gray-300 block text-[10px]">Pedidos Finalizados</span>
+                        <span class="font-extrabold text-base text-green-400" id="cashDeliveredOrders">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumo por Forma de Pagamento -->
+            <div class="bg-white p-5 rounded-2xl border space-y-3 text-xs shadow-sm">
+                <h4 class="font-bold text-gray-800 text-sm border-b pb-2">Entradas por Forma de Pagamento</h4>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="bg-gray-50 p-3 rounded-xl border">
+                        <span class="text-gray-500 block text-[11px]">PIX</span>
+                        <span class="font-extrabold text-sm text-green-700" id="payPixTotal">R$ 0,00</span>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-xl border">
+                        <span class="text-gray-500 block text-[11px]">Cartão de Crédito</span>
+                        <span class="font-extrabold text-sm text-blue-700" id="payCreditTotal">R$ 0,00</span>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-xl border">
+                        <span class="text-gray-500 block text-[11px]">Cartão de Débito</span>
+                        <span class="font-extrabold text-sm text-indigo-700" id="payDebitTotal">R$ 0,00</span>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-xl border">
+                        <span class="text-gray-500 block text-[11px]">Dinheiro</span>
+                        <span class="font-extrabold text-sm text-amber-700" id="payCashTotal">R$ 0,00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de Transações do Dia -->
+            <div class="bg-white p-5 rounded-2xl border space-y-3 text-xs shadow-sm">
+                <h4 class="font-bold text-gray-800 text-sm border-b pb-2">Histórico de Pedidos Processados</h4>
+                <div id="cashierTransactionsList" class="space-y-2 max-h-64 overflow-y-auto">
+                    <p class="text-gray-500 text-center py-4">Nenhuma movimentação registrada hoje.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Aba: Editar Cardápio -->
+        <div id="adminTabMenu" class="hidden space-y-6">
+            <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm space-y-3">
+                <h3 class="font-bold text-sm text-red-800 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus"></i> Cadastrar Novo Produto
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="block font-semibold text-gray-600 mb-1">Nome do Item *</label>
+                        <input type="text" id="newProdName" placeholder="Ex: X-Salada Especial" class="w-full p-2.5 border rounded-lg outline-none focus:ring-1 focus:ring-red-700">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-600 mb-1">Categoria *</label>
+                        <select id="newProdCat" class="w-full p-2.5 border rounded-lg outline-none focus:ring-1 focus:ring-red-700">
+                            <option value="pizzas">🍕 Pizzas</option>
+                            <option value="sanduiches">🍔 Sanduíches</option>
+                            <option value="porcoes">🍟 Porções</option>
+                            <option value="pratos">🍽️ Executivos</option>
+                            <option value="sucos">🥤 Sucos & Cremes</option>
+                            <option value="bebidas">🥤 Bebidas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-600 mb-1">Preço Inicial (R$) *</label>
+                        <input type="number" step="0.50" id="newProdPrice" placeholder="20.00" class="w-full p-2.5 border rounded-lg outline-none focus:ring-1 focus:ring-red-700">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-600 mb-1">Foto do Produto (Escolher do Celular/PC)</label>
+                        <input type="file" id="newProdFile" accept="image/*" class="w-full text-xs p-1.5 border rounded-lg bg-gray-50">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block font-semibold text-gray-600 mb-1">Descrição / Ingredientes</label>
+                        <input type="text" id="newProdDesc" placeholder="Ex: Pão, hambúrguer, queijo, salada..." class="w-full p-2.5 border rounded-lg outline-none focus:ring-1 focus:ring-red-700">
+                    </div>
+                </div>
+                <button onclick="saveNewProduct()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Adicionar ao Cardápio
+                </button>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-sm text-gray-700 mb-3">Produtos Atuais no Cardápio</h3>
+                <div id="adminMenuList" class="space-y-3"></div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Aba: Dados da Loja & Logo -->
+        <div id="adminTabConfig" class="hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl border space-y-4 text-xs">
+                <h3 class="font-bold text-sm text-gray-800 border-b pb-2">Alterar Dados da Empresa, Logo e Link de Avaliação</h3>
+                <div>
+                    <label class="block font-semibold text-gray-600 mb-1">Nome da Empresa</label>
+                    <input type="text" id="cfgStoreName" class="w-full p-2.5 border rounded-lg outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-600 mb-1">Telefone WhatsApp</label>
+                    <input type="text" id="cfgStorePhone" class="w-full p-2.5 border rounded-lg outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-600 mb-1">Link de Avaliação do Google</label>
+                    <input type="text" id="cfgGoogleUrl" placeholder="https://g.page/r/exemplo-sua-empresa/review" class="w-full p-2.5 border rounded-lg outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-600 mb-1">Alterar Foto da Capa / Logo</label>
+                    <input type="file" id="cfgLogoFile" accept="image/*" class="w-full text-xs p-1.5 border rounded-lg bg-gray-50">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-600 mb-1">Nova Senha de Acesso Admin</label>
+                    <input type="password" id="cfgStorePass" class="w-full p-2.5 border rounded-lg outline-none" placeholder="Digite uma nova senha caso queira alterar">
+                </div>
+                <button onclick="saveStoreConfig()" class="bg-red-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs hover:bg-red-800 transition">
+                    Salvar Informações
+                </button>
+            </div>
+
+            <!-- GERADOR DE QR CODE DA MESA -->
+            <div class="bg-white p-5 rounded-2xl border space-y-4 text-xs">
+                <div class="flex items-center justify-between border-b pb-2">
+                    <div>
+                        <h3 class="font-bold text-sm text-red-800 flex items-center gap-2">
+                            <i class="fa-solid fa-qrcode text-base"></i> Gerador de QR Code das Mesas
+                        </h3>
+                        <p class="text-gray-500 text-[11px]">Gere o código QR para imprimir e colocar nas mesas.</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row items-center gap-4 bg-gray-50 p-4 rounded-xl border">
+                    <div class="space-y-2 text-center sm:text-left w-full sm:w-auto">
+                        <label class="block text-gray-700 font-bold">Selecione a Mesa:</label>
+                        <input type="number" id="qrMesaInput" value="1" min="1" max="100" onchange="generateQrCodeForTable()" class="w-24 text-center border-2 border-red-700 p-2 rounded-xl font-extrabold text-base outline-none">
+                    </div>
+
+                    <div class="flex flex-col items-center justify-center p-3 bg-white border-2 border-dashed border-gray-300 rounded-2xl shadow-sm">
+                        <div id="qrcode" class="p-1"></div>
+                        <span class="text-[10px] text-gray-500 font-bold mt-2">Mesa <span id="qrTableLabel">1</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Rodapé Fixo do Carrinho -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-30 py-3 px-4" id="cartFooter">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div>
+                <span class="text-xs text-gray-500 font-medium block">Total do Pedido:</span>
+                <span id="cartTotal" class="text-xl font-extrabold text-red-700">R$ 0,00</span>
+            </div>
+            <button onclick="openCartModal()" class="bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 text-white font-bold px-6 py-2.5 rounded-xl text-sm flex items-center gap-2 shadow-lg transition transform active:scale-95">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Ver Carrinho (<span id="cartCount">0</span>)
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal do Carrinho & Checkout -->
+    <div id="cartModal" class="fixed inset-0 bg-black/60 z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-lg rounded-t-2xl sm:rounded-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="bg-red-800 text-white px-5 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-yellow-400 flex items-center gap-2">
+                    <i class="fa-solid fa-bag-shopping"></i> Seu Pedido (Pull Request)
+                </h3>
+                <button onclick="closeCartModal()" class="text-gray-300 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="p-5 overflow-y-auto flex-grow space-y-5" id="cartContent">
+                <div>
+                    <h4 class="font-bold text-gray-700 text-sm mb-3 border-b pb-1">Itens Selecionados</h4>
+                    <div id="cartItemsList" class="space-y-3"></div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                    <h4 class="font-bold text-red-800 text-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-user"></i> Dados para Entrega / Atendimento
+                    </h4>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Nome Completo *</label>
+                        <input type="text" id="custName" placeholder="Ex: Maria Silva" class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-red-700 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Telefone / WhatsApp *</label>
+                        <input type="tel" id="custPhone" placeholder="(62) 99999-9999" class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-red-700 outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Tipo de Atendimento</label>
+                        <select id="deliveryType" onchange="toggleAddressFields()" class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-red-700 outline-none">
+                            <option value="Entrega em Domicílio">Delivery (Entrega em Domicílio)</option>
+                            <option value="Consumo na Mesa">Atendimento de Mesa</option>
+                            <option value="Retirada no Balcão">Retirada no Balcão</option>
+                        </select>
+                    </div>
+
+                    <div id="tableSelectGroup" class="hidden">
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Número da Mesa *</label>
+                        <input type="number" id="custTable" placeholder="Ex: 05" class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-red-700 outline-none">
+                    </div>
+
+                    <div id="addressFields" class="space-y-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Endereço e Número *</label>
+                            <input type="text" id="custAddress" placeholder="Rua, Av, Número" class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-red-700 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Bairro e Ponto de Referência</label>
+                            <input type="text" id="custRef" placeholder="Ex: Próximo à praça principal" class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-red-700 outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Forma de Pagamento *</label>
+                        <select id="paymentMethod" onchange="toggleChangeField()" class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-red-700 outline-none">
+                            <option value="PIX">PIX</option>
+                            <option value="Cartão de Débito">Cartão de Débito</option>
+                            <option value="Cartão de Crédito">Cartão de Crédito</option>
+                            <option value="Dinheiro">Dinheiro</option>
+                        </select>
+                    </div>
+
+                    <div id="changeField" class="hidden">
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Troco para quanto?</label>
+                        <input type="text" id="changeAmount" placeholder="Ex: Troco para R$ 50,00" class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-red-700 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Observações do Pedido</label>
+                        <textarea id="orderObs" placeholder="Ex: Sem cebola, caprichar na maionese..." class="w-full text-xs p-2.5 border rounded-lg focus:ring-1 focus:ring-red-700 outline-none h-16 resize-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-gray-100 border-t flex flex-col gap-2">
+                <div class="flex justify-between items-center text-sm font-bold text-gray-800">
+                    <span>Total a Pagar:</span>
+                    <span id="modalCartTotal" class="text-xl text-red-700">R$ 0,00</span>
+                </div>
+                <button onclick="submitOrder()" class="w-full bg-green-600 hover:bg-green-700 text-white font-extrabold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg transition">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> Enviar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Login / Cadastro Admin -->
+    <div id="adminAuthModal" class="fixed inset-0 bg-black/70 z-50 hidden flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
+            <button onclick="closeAdminAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            
+            <div id="authFirstSetup" class="hidden space-y-3">
+                <h3 class="font-bold text-lg text-red-800 text-center">Cadastro Inicial do Administrador</h3>
+                <p class="text-xs text-gray-500 text-center">Defina a senha para gerenciar a loja.</p>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Nome da Empresa</label>
+                    <input type="text" id="initStoreName" value="Tropical Lanches" class="w-full text-xs p-2.5 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Telefone WhatsApp</label>
+                    <input type="text" id="initStorePhone" value="(62) 98491-3598" class="w-full text-xs p-2.5 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Crie a Senha de Acesso *</label>
+                    <input type="password" id="initStorePass" placeholder="Senha secreta" class="w-full text-xs p-2.5 border rounded-lg">
+                </div>
+                <button onclick="completeFirstAdminSetup()" class="w-full bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-red-800 transition">
+                    Concluir Cadastro e Entrar
+                </button>
+            </div>
+
+            <div id="authLogin" class="space-y-4">
+                <h3 class="font-bold text-lg text-gray-800 text-center">Acesso Restrito ao Administrador</h3>
+                <div>
+                    <input type="password" id="loginPass" placeholder="Digite a senha..." class="w-full text-sm p-3 border rounded-xl outline-none focus:ring-2 focus:ring-red-700 text-center font-bold">
+                </div>
+                <button onclick="attemptAdminLogin()" class="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2.5 rounded-xl text-sm transition">
+                    Entrar no Painel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="confirmModal" class="fixed inset-0 bg-black/70 z-50 hidden flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
+            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto text-3xl">
+                <i class="fa-solid fa-code-merge"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">Pedido Aberto com Sucesso!</h3>
+            <p class="text-xs text-gray-600 leading-relaxed">Seu pedido foi enviado para a cozinha e para o WhatsApp do estabelecimento.</p>
+            <div class="bg-gray-50 p-3 rounded-xl border text-left text-xs space-y-1">
+                <p><strong>Comanda / PR:</strong> <span id="confOrderNum" class="text-red-700 font-bold">#0000</span></p>
+                <p><strong>Mesa / Atendimento:</strong> <span id="confTableInfo" class="font-bold text-blue-700">--</span></p>
+                <p><strong>Cliente:</strong> <span id="confName">--</span></p>
+                <p><strong>Total:</strong> <span id="confTotal" class="font-bold text-green-700">R$ 0,00</span></p>
+            </div>
+            <button onclick="closeConfirmAndTrack()" class="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2.5 rounded-xl text-sm transition">
+                Acompanhar Status em Tempo Real
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Rastreamento em Tempo Real -->
+    <div id="trackModal" class="fixed inset-0 bg-black/60 z-50 hidden flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-5">
+            <button onclick="closeTrackModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <i class="fa-solid fa-code-merge text-red-700"></i> Status do Pedido (Tempo Real)
+            </h3>
+            <div id="trackContent"></div>
+        </div>
+    </div>
+
+    <!-- Script Principal -->
+    <script>
+        const defaultProducts = [
+            // PIZZAS
+            { id: 101, category: 'pizzas', name: 'Pizza Bacon', desc: 'Mussarela, Bacon, Cebola, Tomate, Orégano e Molho', prices: { P: 40.00, M: 50.00, G: 60.00 }, price: 50.00, img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80' },
+            { id: 102, category: 'pizzas', name: 'Pizza Calabresa', desc: 'Mussarela, Calabresa, Tomate, Orégano e Molho', prices: { P: 40.00, M: 50.00, G: 60.00 }, price: 50.00, img: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=400&q=80' },
+            { id: 103, category: 'pizzas', name: 'Pizza Presunto', desc: 'Mussarela, Presunto, Tomate, Orégano e Molho', prices: { P: 40.00, M: 50.00, G: 60.00 }, price: 50.00, img: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=400&q=80' },
+            { id: 104, category: 'pizzas', name: 'Pizza Carne de Sol', desc: 'Mussarela, Carne de Sol, Catupiry, Tomate, Orégano e Molho', prices: { P: 45.00, M: 55.00, G: 65.00 }, price: 55.00, img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=400&q=80' },
+            { id: 105, category: 'pizzas', name: 'Pizza Francesa', desc: 'Mussarela, Lombo Defumado, Creme de Leite, Ovo, Tomate, Orégano e Molho', prices: { P: 45.00, M: 55.00, G: 65.00 }, price: 55.00, img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80' },
+            { id: 106, category: 'pizzas', name: 'Pizza Frango', desc: 'Mussarela, Frango, Cebola, Tomate, Orégano e Molho', prices: { P: 40.00, M: 50.00, G: 60.00 }, price: 50.00, img: 'https://images.unsplash.com/photo-1588315029754-2dd089d39a1a?auto=format&fit=crop&w=400&q=80' },
+            { id: 107, category: 'pizzas', name: 'Pizza Frango c/ Catupiry', desc: 'Mussarela, Catupiry, Frango, Tomate, Orégano e Molho', prices: { P: 40.00, M: 50.00, G: 60.00 }, price: 50.00, img: 'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=400&q=80' },
+            { id: 108, category: 'pizzas', name: 'Pizza Lombinho', desc: 'Mussarela, Lombinho, Azeitona, Orégano e Molho', prices: { P: 40.00, M: 50.00, G: 60.00 }, price: 50.00, img: 'https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?auto=format&fit=crop&w=400&q=80' },
+            { id: 109, category: 'pizzas', name: 'Pizza Margherita', desc: 'Mussarela, Molho, Parmesão, Tomate e Orégano', prices: { P: 40.00, M: 50.00, G: 60.00 }, price: 50.00, img: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=400&q=80' },
+            { id: 110, category: 'pizzas', name: 'Pizza Quatro Queijos', desc: 'Mussarela, Provolone, Catupiry, Parmesão, Azeitona, Tomate, Orégano e Molho', prices: { P: 45.00, M: 55.00, G: 65.00 }, price: 55.00, img: 'https://images.unsplash.com/photo-1573821663912-6df460f9c684?auto=format&fit=crop&w=400&q=80' },
+            { id: 111, category: 'pizzas', name: 'Pizza Mussarela', desc: 'Mussarela, Molho, Tomate e Orégano', prices: { P: 40.00, M: 50.00, G: 60.00 }, price: 50.00, img: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=400&q=80' },
+            { id: 112, category: 'pizzas', name: 'Pizza À Moda', desc: 'Mussarela, Presunto, Ervilha, Molho, Ovo, Azeitona, Tomate e Orégano', prices: { P: 45.00, M: 55.00, G: 65.00 }, price: 55.00, img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80' },
+            { id: 113, category: 'pizzas', name: 'Pizza Portuguesa', desc: 'Mussarela, Presunto, Cebola, Ervilha, Palmito, Azeitona, Molho, Ovo e Orégano', prices: { P: 45.00, M: 55.00, G: 65.00 }, price: 55.00, img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=400&q=80' },
+            { id: 114, category: 'pizzas', name: 'Pizza Vegetariana', desc: 'Mussarela, Palmito, Ervilha, Azeitona, Tomate, Molho e Orégano', prices: { P: 45.00, M: 55.00, G: 65.00 }, price: 55.00, img: 'https://images.unsplash.com/photo-1511688878353-3a2f5be94cd7?auto=format&fit=crop&w=400&q=80' },
+            { id: 115, category: 'pizzas', name: 'Pizza Tropical', desc: 'Mussarela, Presunto, Frango, Calabresa, Ervilha, Azeitona, Tomate, Molho e Orégano', prices: { P: 45.00, M: 55.00, G: 65.00 }, price: 55.00, img: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=400&q=80' },
+
+            // SANDUÍCHES
+            { id: 201, category: 'sanduiches', name: 'Bauru', desc: 'Pão de Forma, mussarela, presunto e tomate.', price: 16.00, img: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=400&q=80' },
+            { id: 202, category: 'sanduiches', name: 'Bauru c/ Frango', desc: 'Pão de Forma, frango, mussarela, presunto e tomate.', price: 19.00, img: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=400&q=80' },
+            { id: 203, category: 'sanduiches', name: 'X-Simples', desc: 'Pão, carne, mussarela, presunto, tomate, alface, milho e batata.', price: 18.00, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80' },
+            { id: 204, category: 'sanduiches', name: 'X-Especial', desc: 'Pão, carne, ovo, mussarela, presunto, tomate, alface, milho e batata.', price: 20.00, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80' },
+            { id: 205, category: 'sanduiches', name: 'X-Bacon Simples', desc: 'Pão, carne, bacon, mussarela, presunto, tomate, alface, milho e batata.', price: 20.00, img: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?auto=format&fit=crop&w=400&q=80' },
+            { id: 206, category: 'sanduiches', name: 'X-Bacon Especial', desc: 'Pão, carne, bacon, ovo, mussarela, presunto, tomate, alface, milho e batata.', price: 22.00, img: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?auto=format&fit=crop&w=400&q=80' },
+            { id: 207, category: 'sanduiches', name: 'X-Dog', desc: 'Pão, salsicha, ovo, mussarela, presunto, tomate, alface, milho e batata.', price: 20.00, img: 'https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=400&q=80' },
+            { id: 208, category: 'sanduiches', name: 'X-Rango', desc: 'Pão, carne, salsicha, ovo, mussarela, presunto, tomate, alface, milho e batata.', price: 22.00, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80' },
+            { id: 209, category: 'sanduiches', name: 'X-Tudo', desc: 'Pão, carne, salsicha, bacon, ovo, mussarela, presunto, tomate, alface, milho e batata.', price: 24.00, img: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=400&q=80' },
+            { id: 210, category: 'sanduiches', name: 'X-Tudo c/ Frango', desc: 'Pão, frango, salsicha, bacon, ovo, mussarela, presunto, tomate, alface, milho e batata.', price: 26.00, img: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=400&q=80' },
+            { id: 211, category: 'sanduiches', name: 'X-Lombo Simples', desc: 'Pão, lombo, mussarela, presunto, tomate, alface, milho e batata.', price: 22.00, img: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=400&q=80' },
+            { id: 212, category: 'sanduiches', name: 'X-Lombo Especial', desc: 'Pão, lombo, ovo, mussarela, presunto, tomate, alface, milho e batata.', price: 24.00, img: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=400&q=80' },
+            { id: 213, category: 'sanduiches', name: 'X-Frango Simples', desc: 'Pão, frango, mussarela, presunto, tomate, alface, milho e batata.', price: 22.00, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80' },
+            { id: 214, category: 'sanduiches', name: 'X-Frango Especial', desc: 'Pão, frango, ovo, mussarela, presunto, tomate, alface, milho e batata.', price: 24.00, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80' },
+            { id: 215, category: 'sanduiches', name: 'X-Tropical', desc: 'Pão, 2 carnes, bacon, frango, ovo, lombo, salsicha, mussarela, presunto, tomate, alface, milho e batata.', price: 30.00, img: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=400&q=80' },
+
+            // PORÇÕES
+            { id: 301, category: 'porcoes', name: 'Contra Filé na Chapa', desc: 'Acompanha arroz, tropeiro, batata e vinagrete.', price: 100.00, img: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80' },
+            { id: 302, category: 'porcoes', name: 'Caranha Frita', desc: 'Deliciosa porção de peixe caranha frito.', price: 55.00, img: 'https://images.unsplash.com/photo-1534766555764-ce878a5e3a2b?auto=format&fit=crop&w=400&q=80' },
+            { id: 303, category: 'porcoes', name: 'Frango Frito', desc: 'Porção crocante de frango frito.', price: 45.00, img: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=400&q=80' },
+            { id: 304, category: 'porcoes', name: 'Kibe c/ Catupiry', desc: 'Kibes recheados com catupiry cremoso.', price: 45.00, img: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=400&q=80' },
+            { id: 305, category: 'porcoes', name: 'Batata Frita c/ Cheddar e Bacon', desc: 'Porção grande de batata crocante com molho cheddar e bacon.', price: 30.00, img: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=400&q=80' },
+            { id: 306, category: 'porcoes', name: 'Omelete', desc: 'Escolha o recheio: Carne de Sol, Catupiry, Queijo, Frango c/ Catupiry ou Presunto.', price: 25.00, hasFlavors: true, flavors: ['Carne de Sol', 'Catupiry', 'Queijo', 'Frango c/ Catupiry', 'Presunto'], img: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?auto=format&fit=crop&w=400&q=80' },
+
+            // PRATOS EXECUTIVOS
+            { id: 401, category: 'pratos', name: 'Prato Executivo Completo', desc: 'Servido com Arroz, Feijão, Tomate e Alface. Acompanha Purê ou Batata Frita.', price: 30.00, hasOptions: true, options: ['Purê de Batata', 'Batata Frita'], img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80' },
+
+            // SUCOS E CREMES
+            { id: 501, category: 'sucos', name: 'Sucos Naturais (500ml)', desc: 'Abacaxi, Açaí, Acerola, Caju, Cupuaçu, Goiaba, Maracujá, Morango, Tamarindo, Uva.', price: 10.00, hasFlavors: true, flavors: ['Abacaxi', 'Açaí', 'Acerola', 'Caju', 'Cupuaçu', 'Goiaba', 'Maracujá', 'Morango', 'Tamarindo', 'Uva'], img: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=400&q=80' },
+            { id: 502, category: 'sucos', name: 'Cremes da Fruta (500ml)', desc: 'Abacaxi, Acerola, Caju, Cupuaçu, Goiaba, Maracujá, Morango, Tamarindo, Uva.', price: 16.00, hasFlavors: true, flavors: ['Abacaxi', 'Acerola', 'Caju', 'Cupuaçu', 'Goiaba', 'Maracujá', 'Morango', 'Tamarindo', 'Uva'], img: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=400&q=80' },
+            { id: 503, category: 'sucos', name: 'Suco de Laranja Especial', desc: 'Suco 100% natural de laranja (500ml).', price: 12.00, img: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=400&q=80' },
+            { id: 504, category: 'sucos', name: 'Creme de Açaí', desc: 'Creme espesso e saboroso de açaí (500ml).', price: 18.00, img: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?auto=format&fit=crop&w=400&q=80' },
+
+            // BEBIDAS
+            { id: 601, category: 'bebidas', name: 'Refrigerante 2 Litros', desc: 'Coca-Cola, Fanta, Sukita ou Guaraná Antarctica.', price: 14.00, hasFlavors: true, flavors: ['Coca-Cola', 'Fanta', 'Sukita', 'Guaraná Antarctica'], img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=400&q=80' },
+            { id: 602, category: 'bebidas', name: 'Refrigerante 1 Litro', desc: 'Coca-Cola, Fanta, Sukita ou Guaraná Antarctica.', price: 12.00, hasFlavors: true, flavors: ['Coca-Cola', 'Fanta', 'Sukita', 'Guaraná Antarctica'], img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=400&q=80' },
+            { id: 603, category: 'bebidas', name: 'Refrigerante Lata', desc: 'Coca-Cola, Fanta, Sukita ou Guaraná Antarctica.', price: 6.00, hasFlavors: true, flavors: ['Coca-Cola', 'Fanta', 'Sukita', 'Guaraná Antarctica'], img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=400&q=80' }
+        ];
+
+        let products = [];
+        let cart = [];
+        let activeCategory = 'todos';
+        let currentOrderTracker = null;
+        let activeTable = null;
+        let adminConfig = { 
+            name: "Tropical Lanches", 
+            phone: "(62) 98491-3598", 
+            address: "Entrega rápida e retirada no balcão", 
+            googleUrl: "https://g.page/r/exemplo-sua-empresa", 
+            logoImg: "184234.png", 
+            pass: null 
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            loadProducts();
+            checkTableQuery();
+            renderProducts(products);
+            loadSavedTracker();
+            
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'tropical_kitchen_orders' || e.key === 'tropical_tracker') {
+                    syncOrderStatusInRealtime();
+                }
+            });
+
+            setInterval(syncOrderStatusInRealtime, 1500);
+            setInterval(checkNotificationsInterval, 2000);
+        });
+
+        function syncOrderStatusInRealtime() {
+            loadSavedTracker();
+            const orders = JSON.parse(localStorage.getItem('tropical_kitchen_orders') || '[]');
+            
+            if (currentOrderTracker) {
+                const latestOrder = orders.find(o => o.id === currentOrderTracker.id);
+                if (latestOrder && latestOrder.status !== currentOrderTracker.status) {
+                    currentOrderTracker.status = latestOrder.status;
+                    localStorage.setItem('tropical_tracker', JSON.stringify(currentOrderTracker));
+                }
+            }
+
+            if (!document.getElementById('trackModal').classList.contains('hidden')) {
+                renderTrackerUI();
+            }
+
+            if (!document.getElementById('adminView').classList.contains('hidden')) {
+                renderKitchenOrders();
+                renderCashierDashboard();
+            }
+        }
+
+        function loadConfig() {
+            const saved = localStorage.getItem('tropical_config');
+            if (saved) adminConfig = JSON.parse(saved);
+            document.getElementById('headerPhone').innerText = adminConfig.phone;
+            document.getElementById('googleReviewBtn').href = adminConfig.googleUrl || "#";
+            if (adminConfig.logoImg) {
+                document.getElementById('headerBannerImg').src = adminConfig.logoImg;
+            }
+        }
+
+        function loadProducts() {
+            const saved = localStorage.getItem('tropical_products');
+            if (saved) {
+                products = JSON.parse(saved);
+            } else {
+                products = [...defaultProducts];
+                localStorage.setItem('tropical_products', JSON.stringify(products));
+            }
+        }
+
+        function checkTableQuery() {
+            const params = new URLSearchParams(window.location.search);
+            const mesa = params.get('mesa');
+            if (mesa) {
+                activeTable = mesa;
+                document.getElementById('tableBadge').classList.remove('hidden');
+                document.getElementById('tableNumber').innerText = mesa.padStart(2, '0');
+                document.getElementById('deliveryType').value = 'Consumo na Mesa';
+                document.getElementById('custTable').value = mesa;
+                toggleAddressFields();
+            }
+        }
+
+        function callWaiterPrompt() {
+            let targetMesa = activeTable;
+            if (!targetMesa) {
+                targetMesa = prompt('Informe o número da sua Mesa para chamar o garçom:');
+                if (!targetMesa) return;
+            }
+            sendWaiterCall(targetMesa);
+        }
+
+        function sendWaiterCall(mesaNumber) {
+            let waiterCalls = JSON.parse(localStorage.getItem('tropical_waiter_calls') || '[]');
+            waiterCalls.unshift({ 
+                id: Date.now(), 
+                table: mesaNumber, 
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+            });
+            localStorage.setItem('tropical_waiter_calls', JSON.stringify(waiterCalls));
+            alert(`🔔 Garçom chamado para a Mesa ${mesaNumber}! Um atendente já foi avisado.`);
+        }
+
+        function checkNotificationsInterval() {
+            const waiterCalls = JSON.parse(localStorage.getItem('tropical_waiter_calls') || '[]');
+            const badge = document.getElementById('waiterBadgeCount');
+            if (waiterCalls.length > 0) {
+                badge.innerText = waiterCalls.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            const orders = JSON.parse(localStorage.getItem('tropical_kitchen_orders') || '[]');
+            const prBadge = document.getElementById('kitchenPrBadge');
+            if (orders.length > 0) {
+                prBadge.innerText = orders.length;
+                prBadge.classList.remove('hidden');
+            } else {
+                prBadge.classList.add('hidden');
+            }
+        }
+
+        function renderProducts(items) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500">Nenhum item encontrado.</div>`;
+                return;
+            }
+
+            items.forEach(product => {
+                let optionsHTML = '';
+
+                if (product.category === 'pizzas' && product.prices) {
+                    optionsHTML = `
+                        <div class="mt-2 text-xs">
+                            <label class="block font-semibold text-gray-600 mb-1">Tamanho:</label>
+                            <select id="size-${product.id}" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-1.5 text-xs font-semibold focus:ring-red-700 outline-none">
+                                <option value="P">Pequena (P) - R$ ${product.prices.P.toFixed(2)}</option>
+                                <option value="M" selected>Média (M) - R$ ${product.prices.M.toFixed(2)}</option>
+                                <option value="G">Grande (G) - R$ ${product.prices.G.toFixed(2)}</option>
+                            </select>
+                        </div>
+                    `;
+                }
+
+                if (product.hasFlavors) {
+                    optionsHTML = `
+                        <div class="mt-2 text-xs">
+                            <label class="block font-semibold text-gray-600 mb-1">Escolha o Sabor/Recheio:</label>
+                            <select id="flavor-${product.id}" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-1.5 text-xs font-semibold focus:ring-red-700 outline-none">
+                                ${product.flavors.map(f => `<option value="${f}">${f}</option>`).join('')}
+                            </select>
+                        </div>
+                    `;
+                }
+
+                if (product.hasOptions) {
+                    optionsHTML = `
+                        <div class="mt-2 text-xs">
+                            <label class="block font-semibold text-gray-600 mb-1">Acompanhamento:</label>
+                            <select id="option-${product.id}" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-1.5 text-xs font-semibold focus:ring-red-700 outline-none">
+                                ${product.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+                            </select>
+                        </div>
+                    `;
+                }
+
+                const priceDisplay = (product.category === 'pizzas' && product.prices)
+                    ? `A partir de R$ ${product.prices.P.toFixed(2)}`
+                    : `R$ ${product.price.toFixed(2)}`;
+
+                const card = `
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between hover:shadow-md transition">
+                        <div class="p-4 flex gap-3">
+                            <img src="${product.img}" alt="${product.name}" class="w-24 h-24 object-cover rounded-xl flex-shrink-0" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80'">
+                            <div class="flex-grow">
+                                <h3 class="font-bold text-gray-800 text-sm leading-tight">${product.name}</h3>
+                                <p class="text-xs text-gray-500 mt-1 line-clamp-2">${product.desc}</p>
+                                <span class="text-sm font-extrabold text-red-700 block mt-2">${priceDisplay}</span>
+                            </div>
+                        </div>
+                        <div class="px-4 pb-4 bg-gray-50/50 pt-2 border-t border-gray-100">
+                            ${optionsHTML}
+                            <button onclick="addToCart(${product.id})" class="w-full mt-3 bg-red-700 hover:bg-red-800 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-sm">
+                                <i class="fa-solid fa-plus"></i> Adicionar ao Pedido
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        }
+
+        function filterCategory(cat, btnElement) {
+            activeCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('bg-yellow-400', 'text-red-950', 'shadow');
+                btn.classList.add('bg-white/10', 'text-white');
+            });
+            if(btnElement) {
+                btnElement.classList.remove('bg-white/10', 'text-white');
+                btnElement.classList.add('bg-yellow-400', 'text-red-950', 'shadow');
+            }
+
+            if (cat === 'todos') {
+                renderProducts(products);
+            } else {
+                const filtered = products.filter(p => p.category === cat);
+                renderProducts(filtered);
+            }
+        }
+
+        function searchProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(query) || 
+                p.desc.toLowerCase().includes(query)
+            );
+            renderProducts(filtered);
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            let itemPrice = product.price;
+            let itemTitle = product.name;
+            let itemDetail = '';
+
+            if (product.category === 'pizzas' && product.prices) {
+                const sizeSelect = document.getElementById(`size-${productId}`);
+                const size = sizeSelect.value;
+                itemPrice = product.prices[size];
+                const sizeNames = { P: 'Pequena', M: 'Média', G: 'Grande' };
+                itemDetail = `Tamanho: ${sizeNames[size]}`;
+            } else if (product.hasFlavors) {
+                const flavorSelect = document.getElementById(`flavor-${productId}`);
+                itemDetail = `Sabor: ${flavorSelect.value}`;
+            } else if (product.hasOptions) {
+                const optionSelect = document.getElementById(`option-${productId}`);
+                itemDetail = `Opção: ${optionSelect.value}`;
+            }
+
+            const cartIndex = cart.findIndex(i => i.id === productId && i.detail === itemDetail);
+
+            if (cartIndex > -1) {
+                cart[cartIndex].qty += 1;
+            } else {
+                cart.push({
+                    id: productId,
+                    name: itemTitle,
+                    price: itemPrice,
+                    detail: itemDetail,
+                    qty: 1
+                });
+            }
+
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+
+            document.getElementById('cartTotal').innerText = `R$ ${total.toFixed(2)}`;
+            document.getElementById('modalCartTotal').innerText = `R$ ${total.toFixed(2)}`;
+            document.getElementById('cartCount').innerText = count;
+
+            const list = document.getElementById('cartItemsList');
+            list.innerHTML = '';
+
+            if (cart.length === 0) {
+                list.innerHTML = '<p class="text-xs text-gray-500 text-center py-4">Seu carrinho está vazio.</p>';
+                return;
+            }
+
+            cart.forEach((item, index) => {
+                list.innerHTML += `
+                    <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-100 shadow-sm text-xs">
+                        <div class="flex-grow pr-2">
+                            <h5 class="font-bold text-gray-800">${item.name}</h5>
+                            ${item.detail ? `<span class="text-[10px] text-gray-500 block">${item.detail}</span>` : ''}
+                            <span class="font-bold text-red-700">R$ ${(item.price * item.qty).toFixed(2)}</span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded-lg">
+                            <button onclick="changeQty(${index}, -1)" class="w-5 h-5 bg-white rounded flex items-center justify-center font-bold text-gray-600 shadow-sm">-</button>
+                            <span class="font-bold text-gray-800">${item.qty}</span>
+                            <button onclick="changeQty(${index}, 1)" class="w-5 h-5 bg-white rounded flex items-center justify-center font-bold text-gray-600 shadow-sm">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function changeQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function toggleAddressFields() {
+            const type = document.getElementById('deliveryType').value;
+            const fields = document.getElementById('addressFields');
+            const tableGroup = document.getElementById('tableSelectGroup');
+
+            if (type === 'Consumo na Mesa') {
+                tableGroup.classList.remove('hidden');
+                fields.classList.add('hidden');
+            } else if (type === 'Retirada no Balcão') {
+                tableGroup.classList.add('hidden');
+                fields.classList.add('hidden');
+            } else {
+                tableGroup.classList.add('hidden');
+                fields.classList.remove('hidden');
+            }
+        }
+
+        function toggleChangeField() {
+            const method = document.getElementById('paymentMethod').value;
+            const field = document.getElementById('changeField');
+            if (method === 'Dinheiro') {
+                field.classList.remove('hidden');
+            } else {
+                field.classList.add('hidden');
+            }
+        }
+
+        function openCartModal() { document.getElementById('cartModal').classList.remove('hidden'); }
+        function closeCartModal() { document.getElementById('cartModal').classList.add('hidden'); }
+
+        function generateQrCodeForTable() {
+            const mesaNum = document.getElementById('qrMesaInput').value || "1";
+            document.getElementById('qrTableLabel').innerText = mesaNum;
+            const currentUrl = window.location.origin + window.location.pathname + `?mesa=${mesaNum}`;
+            const qrContainer = document.getElementById("qrcode");
+            qrContainer.innerHTML = '';
+            
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(qrContainer, { text: currentUrl, width: 130, height: 130 });
+            } else {
+                qrContainer.innerHTML = `<span class="text-xs text-red-600">Biblioteca QR indisponível.</span>`;
+            }
+        }
+
+        function openAdminPortal() {
+            if (!adminConfig.pass) {
+                document.getElementById('authFirstSetup').classList.remove('hidden');
+                document.getElementById('authLogin').classList.add('hidden');
+                document.getElementById('adminAuthModal').classList.remove('hidden');
+            } else {
+                document.getElementById('authFirstSetup').classList.add('hidden');
+                document.getElementById('authLogin').classList.remove('hidden');
+                document.getElementById('adminAuthModal').classList.remove('hidden');
+            }
+        }
+
+        function closeAdminAuthModal() {
+            document.getElementById('adminAuthModal').classList.add('hidden');
+        }
+
+        function completeFirstAdminSetup() {
+            const name = document.getElementById('initStoreName').value.trim();
+            const phone = document.getElementById('initStorePhone').value.trim();
+            const pass = document.getElementById('initStorePass').value.trim();
+
+            if (!pass) {
+                alert('Por favor, crie uma senha para o administrador.');
+                return;
+            }
+
+            adminConfig.name = name;
+            adminConfig.phone = phone;
+            adminConfig.pass = pass;
+            localStorage.setItem('tropical_config', JSON.stringify(adminConfig));
+            loadConfig();
+
+            closeAdminAuthModal();
+            showAdminDashboard();
+        }
+
+        function attemptAdminLogin() {
+            const pass = document.getElementById('loginPass').value.trim();
+            if (pass === adminConfig.pass) {
+                closeAdminAuthModal();
+                document.getElementById('loginPass').value = '';
+                showAdminDashboard();
+            } else {
+                alert('Senha incorreta! Tente novamente.');
+            }
+        }
+
+        function showAdminDashboard() {
+            document.getElementById('clientView').classList.add('hidden');
+            document.getElementById('searchBarContainer').classList.add('hidden');
+            document.getElementById('cartFooter').classList.add('hidden');
+            document.getElementById('adminView').classList.remove('hidden');
+
+            document.getElementById('cfgStoreName').value = adminConfig.name;
+            document.getElementById('cfgStorePhone').value = adminConfig.phone;
+            document.getElementById('cfgGoogleUrl').value = adminConfig.googleUrl || "";
+            document.getElementById('adminStoreTitle').innerText = adminConfig.name + " - Painel Admin & Cozinha";
+
+            renderKitchenOrders();
+            renderWaiterCalls();
+            renderAdminMenuList();
+            renderCashierDashboard();
+            generateQrCodeForTable();
+        }
+
+        function closeAdminPortal() {
+            document.getElementById('adminView').classList.add('hidden');
+            document.getElementById('clientView').classList.remove('hidden');
+            document.getElementById('searchBarContainer').classList.remove('hidden');
+            document.getElementById('cartFooter').classList.remove('hidden');
+            renderProducts(products);
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('adminTabKitchen').classList.add('hidden');
+            document.getElementById('adminTabWaiter').classList.add('hidden');
+            document.getElementById('adminTabCashier').classList.add('hidden');
+            document.getElementById('adminTabMenu').classList.add('hidden');
+            document.getElementById('adminTabConfig').classList.add('hidden');
+
+            document.querySelectorAll('#adminView button[id^="tabBtn"]').forEach(b => {
+                b.className = 'bg-gray-200 text-gray-700 hover:bg-gray-300 px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap';
+            });
+
+            if (tab === 'kitchen') {
+                document.getElementById('adminTabKitchen').classList.remove('hidden');
+                document.getElementById('tabBtnKitchen').className = 'bg-red-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap';
+                renderKitchenOrders();
+            } else if (tab === 'waiter') {
+                document.getElementById('adminTabWaiter').classList.remove('hidden');
+                document.getElementById('tabBtnWaiter').className = 'bg-red-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap';
+                renderWaiterCalls();
+            } else if (tab === 'cashier') {
+                document.getElementById('adminTabCashier').classList.remove('hidden');
+                document.getElementById('tabBtnCashier').className = 'bg-red-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap';
+                renderCashierDashboard();
+            } else if (tab === 'menu') {
+                document.getElementById('adminTabMenu').classList.remove('hidden');
+                document.getElementById('tabBtnMenu').className = 'bg-red-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap';
+                renderAdminMenuList();
+            } else if (tab === 'config') {
+                document.getElementById('adminTabConfig').classList.remove('hidden');
+                document.getElementById('tabBtnConfig').className = 'bg-red-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap';
+                generateQrCodeForTable();
+            }
+        }
+
+        function renderCashierDashboard() {
+            const orders = JSON.parse(localStorage.getItem('tropical_kitchen_orders') || '[]');
+            
+            let totalRevenue = 0;
+            let totalOrders = orders.length;
+            let deliveredOrders = 0;
+
+            let payments = { PIX: 0, 'Cartão de Crédito': 0, 'Cartão de Débito': 0, Dinheiro: 0 };
+            let listContainer = document.getElementById('cashierTransactionsList');
+            listContainer.innerHTML = '';
+
+            orders.forEach(ord => {
+                totalRevenue += ord.total;
+                if (ord.status === 4 || (ord.deliveryType !== 'Entrega em Domicílio' && ord.status === 3)) deliveredOrders++;
+                if (payments[ord.payment] !== undefined) {
+                    payments[ord.payment] += ord.total;
+                }
+
+                let statusLabel = 'Em processo';
+                let statusColor = 'text-amber-600';
+                if (ord.status === 2) { statusLabel = 'Em Preparo'; statusColor = 'text-blue-600'; }
+                if (ord.status === 3) { statusLabel = ord.deliveryType === 'Entrega em Domicílio' ? '🛵 Motoboy na Rua' : '✅ Finalizado / Entregue'; statusColor = 'text-green-600'; }
+                if (ord.status === 4) { statusLabel = '✅ Finalizado / Entregue'; statusColor = 'text-green-600'; }
+
+                listContainer.innerHTML += `
+                    <div class="flex justify-between items-center p-2.5 bg-gray-50 rounded-xl border border-gray-100 text-xs">
+                        <div>
+                            <strong class="text-red-800">PR #${ord.id} - ${ord.name}</strong>
+                            <span class="text-[10px] text-gray-500 block">${ord.deliveryType} ${ord.tableNum ? '(Mesa ' + ord.tableNum + ')' : ''} • ${ord.payment}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold text-gray-800 text-xs">R$ ${ord.total.toFixed(2)}</span>
+                            <span class="block text-[9px] font-bold ${statusColor}">${statusLabel}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (totalOrders === 0) {
+                listContainer.innerHTML = `<p class="text-gray-500 text-center py-4">Nenhuma movimentação registrada hoje.</p>`;
+            }
+
+            const averageTicket = totalOrders > 0 ? (totalRevenue / totalOrders) : 0;
+
+            document.getElementById('cashTotalRevenue').innerText = `R$ ${totalRevenue.toFixed(2)}`;
+            document.getElementById('cashTotalOrders').innerText = totalOrders;
+            document.getElementById('cashAverageTicket').innerText = `R$ ${averageTicket.toFixed(2)}`;
+            document.getElementById('cashDeliveredOrders').innerText = deliveredOrders;
+
+            document.getElementById('payPixTotal').innerText = `R$ ${payments['PIX'].toFixed(2)}`;
+            document.getElementById('payCreditTotal').innerText = `R$ ${payments['Cartão de Crédito'].toFixed(2)}`;
+            document.getElementById('payDebitTotal').innerText = `R$ ${payments['Cartão de Débito'].toFixed(2)}`;
+            document.getElementById('payCashTotal').innerText = `R$ ${payments['Dinheiro'].toFixed(2)}`;
+        }
+
+        function resetDailyCashier() {
+            if (confirm('Deseja fechar o caixa do dia? Isso limpará todas as comandas registradas no histórico.')) {
+                localStorage.removeItem('tropical_kitchen_orders');
+                renderCashierDashboard();
+                renderKitchenOrders();
+                alert('Caixa do dia fechado com sucesso!');
+            }
+        }
+
+        function renderWaiterCalls() {
+            const container = document.getElementById('waiterCallsList');
+            const calls = JSON.parse(localStorage.getItem('tropical_waiter_calls') || '[]');
+
+            if (calls.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-6">Nenhum chamado de garçom no momento.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            calls.forEach(call => {
+                container.innerHTML += `
+                    <div class="bg-yellow-50 border border-yellow-300 p-4 rounded-xl flex items-center justify-between text-xs shadow-sm animate-pulse">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-yellow-400 text-red-950 font-extrabold rounded-full flex items-center justify-center text-base">
+                                🔔
+                            </div>
+                            <div>
+                                <strong class="text-red-800 text-sm block">MESA ${call.table} SOLICITA ATENDIMENTO</strong>
+                                <span class="text-gray-500 block text-[11px]">Chamado recebido às ${call.time}</span>
+                            </div>
+                        </div>
+                        <button onclick="resolveWaiterCall(${call.id})" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow">
+                            Atendido ✓
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function resolveWaiterCall(id) {
+            let calls = JSON.parse(localStorage.getItem('tropical_waiter_calls') || '[]');
+            calls = calls.filter(c => c.id !== id);
+            localStorage.setItem('tropical_waiter_calls', JSON.stringify(calls));
+            renderWaiterCalls();
+            checkNotificationsInterval();
+        }
+
+        function clearAllWaiterCalls() {
+            localStorage.removeItem('tropical_waiter_calls');
+            renderWaiterCalls();
+            checkNotificationsInterval();
+        }
+
+        function renderAdminMenuList() {
+            const list = document.getElementById('adminMenuList');
+            list.innerHTML = '';
+
+            products.forEach((prod) => {
+                list.innerHTML += `
+                    <div class="bg-white p-3 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <img src="${prod.img}" class="w-12 h-12 object-cover rounded-lg flex-shrink-0" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80'">
+                            <div>
+                                <h4 class="font-bold text-gray-800">${prod.name}</h4>
+                                <span class="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 capitalize">${prod.category}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                            <div class="flex items-center gap-1">
+                                <span class="font-semibold text-gray-500">R$</span>
+                                <input type="number" step="0.50" value="${prod.price}" onchange="updateProductPrice(${prod.id}, this.value)" class="w-20 p-1 border rounded text-center font-bold text-red-700">
+                            </div>
+                            <label class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-lg cursor-pointer" title="Trocar Foto">
+                                <i class="fa-solid fa-image"></i>
+                                <input type="file" accept="image/*" class="hidden" onchange="changeProductFilePhoto(${prod.id}, this)">
+                            </label>
+                            <button onclick="deleteProduct(${prod.id})" class="bg-red-100 hover:bg-red-200 text-red-700 p-2 rounded-lg" title="Excluir">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function saveNewProduct() {
+            const name = document.getElementById('newProdName').value.trim();
+            const category = document.getElementById('newProdCat').value;
+            const price = parseFloat(document.getElementById('newProdPrice').value);
+            const desc = document.getElementById('newProdDesc').value.trim();
+            const fileInput = document.getElementById('newProdFile');
+
+            if (!name || isNaN(price)) {
+                alert('Preencha o Nome e o Preço do produto.');
+                return;
+            }
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    addProductToStore(name, category, price, desc, e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                addProductToStore(name, category, price, desc, 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80');
+            }
+        }
+
+        function addProductToStore(name, category, price, desc, img) {
+            const newProd = { id: Date.now(), category, name, desc, price, img };
+            products.push(newProd);
+            localStorage.setItem('tropical_products', JSON.stringify(products));
+            
+            document.getElementById('newProdName').value = '';
+            document.getElementById('newProdPrice').value = '';
+            document.getElementById('newProdDesc').value = '';
+            document.getElementById('newProdFile').value = '';
+
+            renderAdminMenuList();
+            alert('Produto adicionado com sucesso!');
+        }
+
+        function changeProductFilePhoto(id, input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const prod = products.find(p => p.id === id);
+                    if (prod) {
+                        prod.img = e.target.result;
+                        localStorage.setItem('tropical_products', JSON.stringify(products));
+                        renderAdminMenuList();
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function updateProductPrice(id, newPrice) {
+            const val = parseFloat(newPrice);
+            if (isNaN(val)) return;
+            const prod = products.find(p => p.id === id);
+            if (prod) {
+                prod.price = val;
+                localStorage.setItem('tropical_products', JSON.stringify(products));
+            }
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Tem certeza que deseja excluir este produto do cardápio?')) {
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem('tropical_products', JSON.stringify(products));
+                renderAdminMenuList();
+            }
+        }
+
+        function saveStoreConfig() {
+            const name = document.getElementById('cfgStoreName').value.trim();
+            const phone = document.getElementById('cfgStorePhone').value.trim();
+            const googleUrl = document.getElementById('cfgGoogleUrl').value.trim();
+            const pass = document.getElementById('cfgStorePass').value.trim();
+            const logoFile = document.getElementById('cfgLogoFile');
+
+            if (name) adminConfig.name = name;
+            if (phone) adminConfig.phone = phone;
+            if (googleUrl) adminConfig.googleUrl = googleUrl;
+            if (pass) adminConfig.pass = pass;
+
+            if (logoFile.files && logoFile.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    adminConfig.logoImg = e.target.result;
+                    finalizeConfigSave();
+                };
+                reader.readAsDataURL(logoFile.files[0]);
+            } else {
+                finalizeConfigSave();
+            }
+        }
+
+        function finalizeConfigSave() {
+            localStorage.setItem('tropical_config', JSON.stringify(adminConfig));
+            loadConfig();
+            alert('Dados da empresa, logo e link atualizados com sucesso!');
+        }
+
+        function submitOrder() {
+            if (cart.length === 0) {
+                alert('Adicione itens ao carrinho antes de enviar.');
+                return;
+            }
+
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+            const deliveryType = document.getElementById('deliveryType').value;
+            const tableNum = document.getElementById('custTable').value.trim();
+            const address = document.getElementById('custAddress').value.trim();
+            const ref = document.getElementById('custRef').value.trim();
+            const payment = document.getElementById('paymentMethod').value;
+            const change = document.getElementById('changeAmount').value.trim();
+            const obs = document.getElementById('orderObs').value.trim();
+
+            if (!name || !phone) {
+                alert('Por favor, preencha seu Nome e Telefone.');
+                return;
+            }
+
+            if (deliveryType === 'Entrega em Domicílio' && !address) {
+                alert('Por favor, informe o Endereço de entrega.');
+                return;
+            }
+
+            if (deliveryType === 'Consumo na Mesa' && !tableNum) {
+                alert('Por favor, informe o Número da Mesa.');
+                return;
+            }
+
+            const orderNum = Math.floor(1000 + Math.random() * 9000);
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            const orderData = {
+                id: orderNum,
+                name: name,
+                phone: phone,
+                deliveryType: deliveryType,
+                tableNum: tableNum,
+                address: address,
+                ref: ref,
+                payment: payment,
+                change: change,
+                obs: obs,
+                items: [...cart],
+                total: total,
+                status: 1, // 1: PR Aberto, 2: Em Preparo, 3: Motoboy Saiu (Delivery) ou Pronto (Mesa/Balcão), 4: Finalizado (Delivery)
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+
+            let kitchenOrders = JSON.parse(localStorage.getItem('tropical_kitchen_orders') || '[]');
+            kitchenOrders.unshift(orderData);
+            localStorage.setItem('tropical_kitchen_orders', JSON.stringify(kitchenOrders));
+
+            currentOrderTracker = orderData;
+            localStorage.setItem('tropical_tracker', JSON.stringify(currentOrderTracker));
+
+            let text = `*--- 🔀 NOVO PULL REQUEST / PEDIDO: #${orderNum} ---*\n`;
+            text += `*Cliente:* ${name}\n`;
+            text += `*Telefone:* ${phone}\n`;
+            text += `*Tipo:* ${deliveryType}`;
+            if (deliveryType === 'Consumo na Mesa') text += ` *(MESA ${tableNum})*`;
+            text += `\n`;
+
+            if (deliveryType === 'Entrega em Domicílio') {
+                text += `*Endereço:* ${address}\n`;
+                if (ref) text += `*Referência:* ${ref}\n`;
+            }
+
+            text += `\n*ITENS SOLICITADOS:*\n`;
+            cart.forEach(item => {
+                text += `• ${item.qty}x ${item.name}`;
+                if (item.detail) text += ` (${item.detail})`;
+                text += ` = R$ ${(item.price * item.qty).toFixed(2)}\n`;
+            });
+
+            text += `\n*Pagamento:* ${payment}\n`;
+            if (payment === 'Dinheiro' && change) text += `*Troco:* ${change}\n`;
+            if (obs) text += `*Observações:* ${obs}\n`;
+            text += `\n*TOTAL:* R$ ${total.toFixed(2)}`;
+
+            document.getElementById('confOrderNum').innerText = `#${orderNum}`;
+            document.getElementById('confTableInfo').innerText = deliveryType === 'Consumo na Mesa' ? `Mesa ${tableNum}` : deliveryType;
+            document.getElementById('confName').innerText = name;
+            document.getElementById('confTotal').innerText = `R$ ${total.toFixed(2)}`;
+
+            closeCartModal();
+            document.getElementById('confirmModal').classList.remove('hidden');
+
+            const cleanPhone = adminConfig.phone.replace(/\D/g, '');
+            const targetPhone = cleanPhone.length > 8 ? (cleanPhone.startsWith('55') ? cleanPhone : '55' + cleanPhone) : "5562984913598";
+            const encodedText = encodeURIComponent(text);
+            const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodedText}`;
+
+            setTimeout(() => {
+                window.open(whatsappUrl, '_blank');
+            }, 500);
+
+            cart = [];
+            updateCartUI();
+        }
+
+        function renderKitchenOrders() {
+            const container = document.getElementById('kitchenOrdersList');
+            const orders = JSON.parse(localStorage.getItem('tropical_kitchen_orders') || '[]');
+
+            if (orders.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 col-span-full text-center py-6">Nenhum Pull Request aberto no momento.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            orders.forEach(ord => {
+                let isDelivery = ord.deliveryType === 'Entrega em Domicílio';
+                let maxStatus = isDelivery ? 4 : 3;
+
+                let statusBadge = 'bg-yellow-100 text-yellow-800 border-yellow-300';
+                let statusText = '🔀 PR Aberto (Pendente)';
+                if (ord.status === 2) { statusBadge = 'bg-blue-100 text-blue-800 border-blue-300'; statusText = '🔥 Em Review / Preparo'; }
+                if (ord.status === 3) { 
+                    statusBadge = isDelivery ? 'bg-indigo-100 text-indigo-800 border-indigo-300' : 'bg-green-100 text-green-800 border-green-300'; 
+                    statusText = isDelivery ? '🛵 Motoboy Saiu para Entrega' : '✅ Finalizado / Entregue'; 
+                }
+                if (ord.status === 4) { statusBadge = 'bg-green-100 text-green-800 border-green-300'; statusText = '✅ Pedido Finalizado'; }
+
+                let itemsHTML = ord.items.map(i => `
+                    <li class="flex justify-between border-b border-gray-100 py-1">
+                        <span><strong>${i.qty}x</strong> ${i.name} ${i.detail ? `<span class="text-gray-500 text-[10px]">(${i.detail})</span>` : ''}</span>
+                    </li>
+                `).join('');
+
+                let tableOrTypeInfo = ord.tableNum ? `<span class="bg-red-700 text-white font-black px-2.5 py-1 rounded-lg text-xs shadow">MESA ${ord.tableNum}</span>` : `<span class="bg-gray-700 text-white px-2 py-0.5 rounded text-[10px]">${ord.deliveryType}</span>`;
+
+                let actionButtonText = "Avançar Status";
+                if (ord.status === 1) actionButtonText = "🔥 Iniciar Preparo";
+                else if (ord.status === 2 && isDelivery) actionButtonText = "🛵 Motoboy Saiu";
+                else actionButtonText = "✅ Finalizar Pedido";
+
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-2xl border-2 border-gray-200 shadow-sm space-y-3 text-xs">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <div class="flex items-center gap-2">
+                                ${tableOrTypeInfo}
+                                <div>
+                                    <span class="font-extrabold text-sm text-red-700">PR #${ord.id}</span>
+                                    <h4 class="font-bold text-gray-800">${ord.name}</h4>
+                                </div>
+                            </div>
+                            <span class="${statusBadge} border px-2 py-1 rounded-lg font-extrabold text-[10px]">${statusText}</span>
+                        </div>
+
+                        <div class="bg-gray-50 p-3 rounded-xl border">
+                            <span class="font-bold text-gray-600 block mb-1">Detalhes do Pedido:</span>
+                            <ul class="space-y-1 text-gray-800 max-h-32 overflow-y-auto">
+                                ${itemsHTML}
+                            </ul>
+                        </div>
+
+                        ${ord.obs ? `<div class="bg-yellow-50 p-2 rounded text-[11px] text-yellow-900 border border-yellow-200"><strong>Obs:</strong> ${ord.obs}</div>` : ''}
+
+                        <div class="pt-2 flex justify-between items-center border-t">
+                            <span class="font-bold text-sm text-gray-800">Total: R$ ${ord.total.toFixed(2)}</span>
+                            <div class="flex gap-1.5">
+                                ${ord.status < maxStatus ? `<button onclick="advanceOrderStatus(${ord.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] shadow">${actionButtonText}</button>` : ''}
+                                <button onclick="mergeOrder(${ord.id})" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] shadow flex items-center gap-1">
+                                    <i class="fa-solid fa-code-merge"></i> Merge / Finalizar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function advanceOrderStatus(orderId) {
+            let orders = JSON.parse(localStorage.getItem('tropical_kitchen_orders') || '[]');
+            const ord = orders.find(o => o.id === orderId);
+            let isDelivery = ord.deliveryType === 'Entrega em Domicílio';
+            let maxStatus = isDelivery ? 4 : 3;
+
+            if (ord && ord.status < maxStatus) {
+                ord.status += 1;
+                localStorage.setItem('tropical_kitchen_orders', JSON.stringify(orders));
+                renderKitchenOrders();
+
+                if (currentOrderTracker && currentOrderTracker.id === orderId) {
+                    currentOrderTracker.status = ord.status;
+                    localStorage.setItem('tropical_tracker', JSON.stringify(currentOrderTracker));
+                }
+            }
+        }
+
+        function mergeOrder(orderId) {
+            let orders = JSON.parse(localStorage.getItem('tropical_kitchen_orders') || '[]');
+            const ord = orders.find(o => o.id === orderId);
+            if (ord) {
+                let isDelivery = ord.deliveryType === 'Entrega em Domicílio';
+                ord.status = isDelivery ? 4 : 3;
+                localStorage.setItem('tropical_kitchen_orders', JSON.stringify(orders));
+                renderKitchenOrders();
+
+                if (currentOrderTracker && currentOrderTracker.id === orderId) {
+                    currentOrderTracker.status = ord.status;
+                    localStorage.setItem('tropical_tracker', JSON.stringify(currentOrderTracker));
+                }
+                alert('Pull Request finalizado (Merge concluído)! Status atualizado.');
+            }
+        }
+
+        function closeConfirmAndTrack() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            openTrackModal();
+        }
+
+        function openTrackModal() {
+            document.getElementById('trackModal').classList.remove('hidden');
+            loadSavedTracker();
+            renderTrackerUI();
+        }
+
+        function closeTrackModal() {
+            document.getElementById('trackModal').classList.add('hidden');
+        }
+
+        function loadSavedTracker() {
+            const saved = localStorage.getItem('tropical_tracker');
+            if (saved) {
+                currentOrderTracker = JSON.parse(saved);
+            }
+        }
+
+        function renderTrackerUI() {
+            const container = document.getElementById('trackContent');
+            
+            if (!currentOrderTracker) {
+                container.innerHTML = `
+                    <div class="text-center py-6 space-y-2">
+                        <i class="fa-solid fa-clock-rotate-left text-3xl text-gray-300"></i>
+                        <p class="text-xs text-gray-500">Nenhum pedido ativo no momento.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let isDelivery = currentOrderTracker.deliveryType === 'Entrega em Domicílio';
+            
+            let steps = [];
+            if (isDelivery) {
+                steps = [
+                    { title: 'PR Aberto (Recebido)', desc: 'Aguardando validação na cozinha', icon: 'fa-code-pull-request' },
+                    { title: 'Em Review (Preparo)', desc: 'Seu pedido está sendo preparado', icon: 'fa-fire-burner' },
+                    { title: 'Motoboy Saiu', desc: 'Saiu para a entrega no seu endereço', icon: 'fa-motorcycle' },
+                    { title: 'Pedido Finalizado', desc: 'Entregue com sucesso!', icon: 'fa-circle-check' }
+                ];
+            } else {
+                steps = [
+                    { title: 'PR Aberto (Recebido)', desc: 'Aguardando validação na cozinha', icon: 'fa-code-pull-request' },
+                    { title: 'Em Review (Preparo)', desc: 'Seu pedido está sendo preparado', icon: 'fa-fire-burner' },
+                    { title: 'Finalizado / Entregue', desc: 'Prato entregue à mesa ou retirado!', icon: 'fa-circle-check' }
+                ];
+            }
+
+            let stepsHTML = '';
+            steps.forEach((step, idx) => {
+                const stepNum = idx + 1;
+                const isActive = stepNum <= currentOrderTracker.status;
+                const isCurrent = stepNum === currentOrderTracker.status;
+
+                stepsHTML += `
+                    <div class="flex items-start gap-3 relative">
+                        ${idx !== steps.length - 1 ? `<div class="absolute left-4 top-8 bottom-0 w-0.5 ${stepNum < currentOrderTracker.status ? 'bg-green-500' : 'bg-gray-200'}"></div>` : ''}
+                        
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs z-10 ${isActive ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-500'} ${isCurrent ? 'ring-4 ring-green-100' : ''}">
+                            <i class="fa-solid ${step.icon}"></i>
+                        </div>
+                        
+                        <div class="flex-grow pb-6">
+                            <h4 class="font-bold text-xs ${isActive ? 'text-gray-800' : 'text-gray-400'}">${step.title}</h4>
+                            <p class="text-[11px] text-gray-500">${step.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            let maxStatusVal = isDelivery ? 4 : 3;
+            let isFinished = currentOrderTracker.status >= maxStatusVal;
+
+            container.innerHTML = `
+                <div class="bg-gray-50 p-3 rounded-xl border text-xs mb-4 flex justify-between items-center">
+                    <div>
+                        <span class="block text-gray-500">Pull Request <strong class="text-red-700">#${currentOrderTracker.id}</strong></span>
+                        <span class="text-[10px] text-gray-400">Tipo: <strong>${currentOrderTracker.tableNum ? 'Mesa ' + currentOrderTracker.tableNum : currentOrderTracker.deliveryType}</strong></span>
+                    </div>
+                    <span class="bg-green-100 text-green-700 font-bold px-2 py-1 rounded text-[10px]">
+                        ${isFinished ? 'Finalizado' : 'Em Andamento'}
+                    </span>
+                </div>
+                
+                <div class="space-y-1">
+                    ${stepsHTML}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
